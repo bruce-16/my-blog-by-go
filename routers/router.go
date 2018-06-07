@@ -27,4 +27,6 @@ func loadRouters(router *gin.Engine) {
 
 	router.POST("/upload", ctrs.UpLoadFile)
 
+	router.GET("/get-html-str/:postid", ctrs.GetHtmlStr)
+
 }
