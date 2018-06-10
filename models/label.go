@@ -16,12 +16,9 @@ type MLabel struct {
 // GetLabels 获取所有的标签
 func GetLabels() *[]MLabel {
 	var labels []MLabel
-	has, err := db.ORM.Table("labels").Get(&labels)
+	err := db.ORM.Table("labels").Find(&labels)
 	if err != nil {
 		log.Println("ERROR:", err)
-		return nil
-	}
-	if has == false {
 		return nil
 	}
 	return &labels

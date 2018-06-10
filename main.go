@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/zachrey/blog/routers"
@@ -11,6 +12,9 @@ import (
 
 func main() {
 	r := gin.New()
+	// 设置跨域
+	r.Use(cors.Default())
+
 	// 设置日志文件
 	f, _ := os.Create("gin.log")
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)

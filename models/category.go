@@ -16,12 +16,9 @@ type MCategory struct {
 // GetLabels 获取所有的标签
 func GetCategories() *[]MCategory {
 	var categories []MCategory
-	has, err := db.ORM.Table("categories").Get(&categories)
+	err := db.ORM.Table("categories").Find(&categories)
 	if err != nil {
 		log.Println("ERROR:", err)
-		return nil
-	}
-	if has == false {
 		return nil
 	}
 	return &categories
