@@ -8,13 +8,14 @@ import AppBar from './components/AppBar'
 import Home from './components/Home'
 import Label from './components/Label'
 import Category from './components/Category'
+import Article from './components/Article'
 
 
 
 class App extends Component {
   buttons = [
-    <Button color="inherit"><Link to="/label" style={{ textDecoration: 'none', color: '#fff' }}>标签</Link></Button>,
-    <Button color="inherit"><Link to="/category" style={{ textDecoration: 'none', color: '#fff' }}>分类</Link></Button>
+    <Button key={1} color="inherit"><Link to="/label" style={{ textDecoration: 'none', color: '#fff' }}>标签</Link></Button>,
+    <Button key={2} color="inherit"><Link to="/category" style={{ textDecoration: 'none', color: '#fff' }}>分类</Link></Button>
   ]
   render() {
     return (
@@ -24,6 +25,7 @@ class App extends Component {
           <Route exact path="/" component={Home} />
           <Route exact path="/label" component={Label} />
           <Route exact path="/category" component={Category} />
+          <Route exact path="/article" component={Article} />
         </div>
       </Router>
     );

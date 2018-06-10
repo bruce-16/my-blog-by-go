@@ -1,6 +1,8 @@
 package models
 
 import (
+	"log"
+
 	db "github.com/zachrey/blog/database"
 )
 
@@ -11,6 +13,12 @@ type MPostAndCategory struct {
 	CreateTime int64 `xorm:"created 'create_time'"`
 }
 
+type MCategoryAndPost struct {
+	CategoryId int64 `xorm:"'category_id'"`
+	PostId     int64 `xorm:"'post_id'"`
+	MPost      `xorm:"extends"`
+}
+
 // InsertPostAndCategory 将标题插入到post_category表
 func InsertPostAndCategory(PostId, CategoryId int64) (int64, error) {
 	mPostAndCategory := &MPostAndCategory{
@@ -19,4 +27,19 @@ func InsertPostAndCategory(PostId, CategoryId int64) (int64, error) {
 	}
 	_, err := db.ORM.Table("post_category").Insert(mPostAndCategory)
 	return mPostAndCategory.Id, err
+}
+
+// GetPostsByPLId 根据该表里面的id
+func GetPostsByPCId(categoryId int64) *[]MCategoryAndPost {
+	posts := make([]MCategoryAndPost, 0)
+	err := db.ORM.
+		Table("post_category").
+		Join("INNER", "posts", "post_category.post_id=posts.id").
+		Where("post_category.category_id=?", categoryId).
+		Find(&posts)
+	if err != nil {
+		log.Println("ERROR:", err)
+		return nil
+	}
+	return &posts
 }

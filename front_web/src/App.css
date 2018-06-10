@@ -26,3 +26,8 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+pre, code {
+  background: #ede;
+  padding: 3px;
+}

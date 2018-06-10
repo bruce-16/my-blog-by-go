@@ -7,11 +7,14 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
+	"unicode"
 
 	"github.com/gin-gonic/gin"
 	"github.com/zachrey/blog/models"
@@ -81,6 +84,8 @@ func UpLoadFile(c *gin.Context) {
 func readMdFileInfo(filePath string) error {
 	fileread, _ := ioutil.ReadFile(filePath)
 	lines := strings.Split(string(fileread), "\n")
+	body := strings.Join(lines[5:], "")
+	textAmount := GetStrLength(body)
 	log.Println(lines)
 	const (
 		TITLE      = "title: "
@@ -101,7 +106,7 @@ func readMdFileInfo(filePath string) error {
 		case strings.HasPrefix(lines[i], TITLE):
 			mdInfo[TITLE] = strings.TrimLeft(lines[i], TITLE)
 			postCh = make(chan int64)
-			go models.InsertPost(mdInfo[TITLE], filepath.Base(filePath), postCh)
+			go models.InsertPost(mdInfo[TITLE], filepath.Base(filePath), int64(textAmount), postCh)
 		case strings.HasPrefix(lines[i], CATEGORIES):
 			mdInfo[CATEGORIES] = strings.TrimLeft(lines[i], CATEGORIES)
 			categoryCh = make(chan []int64)
@@ -123,7 +128,7 @@ func readMdFileInfo(filePath string) error {
 			log.Println("[INFO] categoryIds: ", categoryIds)
 
 			for _, v := range categoryIds {
-				models.InsertPostAndCategory(v, postId)
+				models.InsertPostAndCategory(postId, v)
 			}
 		}()
 	}
@@ -134,7 +139,7 @@ func readMdFileInfo(filePath string) error {
 			log.Println("[INFO] labels: ", labels)
 
 			for _, v := range labels {
-				models.InsertPostAndLabel(v, postId)
+				models.InsertPostAndLabel(postId, v)
 			}
 		}()
 	}
@@ -150,4 +155,21 @@ func hasSameNameFile(fileName, dir string) bool {
 		}
 	}
 	return false
+}
+
+// GetStrLength 返回输入的字符串的字数，汉字和中文标点算 1 个字数，英文和其他字符 2 个算 1 个字数，不足 1 个算 1个
+func GetStrLength(str string) float64 {
+	var total float64
+
+	reg := regexp.MustCompile("/·|，|。|《|》|‘|’|”|“|；|：|【|】|？|（|）|、/")
+
+	for _, r := range str {
+		if unicode.Is(unicode.Scripts["Han"], r) || reg.Match([]byte(string(r))) {
+			total = total + 1
+		} else {
+			total = total + 0.5
+		}
+	}
+
+	return math.Ceil(total)
 }

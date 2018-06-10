@@ -30,5 +30,8 @@ func loadRouters(router *gin.Engine) {
 	router.GET("/get-html-str/:postid", ctrs.GetHtmlStr)
 
 	router.GET("/get-labels", ctrs.GetLabels)
+	router.GET("/get-posts", ctrs.GetPosts)
 	router.GET("/get-categoies", ctrs.GetCategoies)
+	router.GET("/get-posts-by-label/:labelid", ctrs.GetPostByLabelId)
+	router.GET("/get-posts-by-category/:categoryid", ctrs.GetPostByCategoryId)
 }

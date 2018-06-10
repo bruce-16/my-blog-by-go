@@ -1,6 +1,8 @@
 package models
 
 import (
+	"log"
+
 	db "github.com/zachrey/blog/database"
 )
 
@@ -11,6 +13,12 @@ type MPostAndLabel struct {
 	CreateTime int64 `xorm:"created 'create_time'"`
 }
 
+type LabelAndPost struct {
+	LabelId int64 `xorm:"'label_id'"`
+	PostId  int64 `xorm:"'post_id'"`
+	MPost   `xorm:"extends"`
+}
+
 // InsertPostAndLabel 将标题插入到post_label表
 func InsertPostAndLabel(PostId, LabelId int64) (int64, error) {
 	mPostAndLabel := &MPostAndLabel{
@@ -19,4 +27,19 @@ func InsertPostAndLabel(PostId, LabelId int64) (int64, error) {
 	}
 	_, err := db.ORM.Table("post_label").Insert(mPostAndLabel)
 	return mPostAndLabel.Id, err
+}
+
+// GetPostsByPLId 根据该表里面的id
+func GetPostsByPLId(labelId int64) *[]LabelAndPost {
+	posts := make([]LabelAndPost, 0)
+	err := db.ORM.
+		Table("post_label").
+		Join("INNER", "posts", "post_label.post_id=posts.id").
+		Where("post_label.label_id=?", labelId).
+		Find(&posts)
+	if err != nil {
+		log.Println("ERROR:", err)
+		return nil
+	}
+	return &posts
 }
