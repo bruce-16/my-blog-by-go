@@ -88,7 +88,7 @@ func upload(filePath, url string) {
 	// 从文件读取数据，写入表单
 	srcFile, err := os.Open(filePath)
 	if err != nil {
-		log.Fatalf("%Open source file failed: s\n", err)
+		log.Fatalf("Open source file failed: %s\n", err)
 	}
 	defer srcFile.Close()
 	_, err = io.Copy(formFile, srcFile)
