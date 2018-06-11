@@ -23,6 +23,7 @@ func main() {
 
 	var filePath string
 	var fileName string
+	var host string
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -35,14 +36,31 @@ func main() {
 			Usage:       "Remove the article by that `file name`",
 			Destination: &fileName,
 		},
+		cli.StringFlag{
+			Name:        "config,cf",
+			Usage:       "Config http request `host`",
+			Destination: &host,
+		},
+	}
+	var url = "http://localhost:8888"
+	isexists := exists("./url.config")
+	if isexists {
+		file, rdRrr := ioutil.ReadFile("./url.config")
+		if rdRrr != nil {
+			log.Fatalln("[ERROR] ", rdRrr)
+		}
+		url = string(file)
 	}
 
 	app.Action = func(c *cli.Context) error {
 		if filePath != "" {
-			upload(filePath)
+			upload(filePath, url)
 		}
 		if fileName != "" {
-			remove(fileName)
+			remove(fileName, url)
+		}
+		if host != "" {
+			config(host)
 		}
 		return nil
 	}
@@ -50,7 +68,7 @@ func main() {
 	checkErr(err)
 }
 
-func upload(filePath string) {
+func upload(filePath, url string) {
 	_, err := os.Stat(filePath) //os.Stat获取文件信息
 	if err != nil {
 		if os.IsExist(err) == false {
@@ -82,7 +100,7 @@ func upload(filePath string) {
 	contentType := writer.FormDataContentType()
 	writer.Close() // 发送之前必须调用Close()以写入结尾行
 	var res *http.Response
-	res, err = http.Post("http://localhost:8888/upload", contentType, buf)
+	res, err = http.Post(url+"/upload", contentType, buf)
 	if err != nil {
 		log.Fatalf("Post failed: %s\n", err)
 	}
@@ -96,8 +114,8 @@ func upload(filePath string) {
 	log.Println("[SUCCESS] Upload file is successfully. ", filePath)
 }
 
-func remove(fileName string) {
-	res, err := http.Get("http://localhost:8888/remove?name=" + fileName)
+func remove(fileName, url string) {
+	res, err := http.Get(url + "/remove?name=" + fileName)
 	if err != nil {
 		log.Fatalf("Remove failed: %s\n", err)
 	}
@@ -111,8 +129,37 @@ func remove(fileName string) {
 	fmt.Println("[SUCCESS] Remove file is successfully. ", fileName)
 }
 
+func config(host string) {
+	var file *os.File
+	var err error
+	file, err = os.OpenFile("./url.config", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, os.ModePerm)
+	defer file.Close()
+
+	if err != nil {
+		log.Fatalln("[ERROR] ", err)
+	}
+
+	_, err = file.WriteString(host)
+	if err != nil {
+		log.Fatalln("[ERROR] ", err)
+	} else {
+		log.Fatalln("[SUCCESSFUL] 配置成功！")
+	}
+}
+
 func checkErr(e error) {
 	if e != nil {
 		log.Fatalln("ERROR:", e)
 	}
+}
+
+func exists(path string) bool {
+	_, err := os.Stat(path) //os.Stat获取文件信息
+	if err != nil {
+		if os.IsExist(err) {
+			return true
+		}
+		return false
+	}
+	return true
 }
