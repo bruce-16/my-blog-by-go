@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"log"
 
 	db "github.com/zachrey/blog/database"
@@ -18,6 +19,20 @@ type MPost struct {
 func GetPostByID(Id int64) *MPost {
 	var post MPost
 	has, err := db.ORM.Table("posts").Id(Id).Get(&post)
+	if err != nil {
+		log.Println("ERROR:", err)
+		return nil
+	}
+	if has == false {
+		return nil
+	}
+	return &post
+}
+
+// GetPostByTitle 根据标题获取post
+func GetPostByTitle(title string) *MPost {
+	var post MPost
+	has, err := db.ORM.Table("posts").Where("title=?", title).Get(&post)
 	if err != nil {
 		log.Println("ERROR:", err)
 		return nil
@@ -47,4 +62,11 @@ func InsertPost(title, fileName string, textAmount int64, ch chan int64) {
 	newPost.TextAmount = textAmount
 	db.ORM.Table("posts").Insert(newPost)
 	ch <- newPost.Id
+}
+
+// RemovePostByID 根据ID删除post
+func RemovePostByID(ID int64) (sql.Result, error) {
+	sql := "DELETE FROM posts WHERE id=?"
+	affacted, err := db.ORM.Sql(sql, ID).Execute()
+	return affacted, err
 }

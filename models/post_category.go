@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"log"
 
 	db "github.com/zachrey/blog/database"
@@ -42,4 +43,11 @@ func GetPostsByPCId(categoryId int64) *[]MCategoryAndPost {
 		return nil
 	}
 	return &posts
+}
+
+// RemovePCByPostID 根据postid删除对于的记录
+func RemovePCByPostID(postID int64) (sql.Result, error) {
+	sql := "DELETE FROM post_category WHERE post_id=?"
+	affacted, err := db.ORM.Sql(sql, postID).Execute()
+	return affacted, err
 }

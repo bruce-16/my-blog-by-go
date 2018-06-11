@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"log"
 
 	db "github.com/zachrey/blog/database"
@@ -42,4 +43,11 @@ func GetPostsByPLId(labelId int64) *[]LabelAndPost {
 		return nil
 	}
 	return &posts
+}
+
+// RemoveByPostID 根据postid删除对于的记录
+func RemovePLByPostID(postID int64) (sql.Result, error) {
+	sql := "DELETE FROM post_label WHERE post_id=?"
+	affacted, err := db.ORM.Sql(sql, postID).Execute()
+	return affacted, err
 }

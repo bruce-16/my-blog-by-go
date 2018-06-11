@@ -97,7 +97,18 @@ func upload(filePath string) {
 }
 
 func remove(fileName string) {
-	fmt.Println("fileName", fileName)
+	res, err := http.Get("http://localhost:8888/remove?name=" + fileName)
+	if err != nil {
+		log.Fatalf("Remove failed: %s\n", err)
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+	var dataMap map[string]interface{}
+	json.Unmarshal(body, &dataMap)
+	if dataMap["status"] != 0 {
+		log.Fatalf("Post failed: %s\n", dataMap["msg"])
+	}
+	fmt.Println("[SUCCESS] Remove file is successfully. ", fileName)
 }
 
 func checkErr(e error) {

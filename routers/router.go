@@ -26,6 +26,7 @@ func loadRouters(router *gin.Engine) {
 	})
 
 	router.POST("/upload", ctrs.UpLoadFile)
+	router.GET("/remove", ctrs.RemoveFile)
 
 	router.GET("/get-html-str/:postid", ctrs.GetHtmlStr)
 
