@@ -49,4 +49,19 @@ go run main.go --help
 
 > 如果go 项目中有些依赖包下载不下来，建议翻墙或者去github找相应的库，然后将它clone到你的src/github文件夹相应路劲下。
 
+## 项目结构
+.
+├── cmd              // 命令行工具
+├── controllers      // 控制器
+├── database         // 数据库连接，配置等
+├── front_web        // react前端内容
+├── models           // 数据库相关表的操作模板
+├── posts            // 存放上传的文章
+├── routers          // 路由
+├── static           // 静态文件资源，前端打包后就可以打包放到这里面
+├── gin.log          // web运行日志
+├── main.go          // 程序入口
+├── README.md
+└── vendor
+
 欢迎讨论和star
