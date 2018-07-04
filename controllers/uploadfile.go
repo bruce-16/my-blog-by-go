@@ -93,14 +93,13 @@ func readMdFileInfo(filePath string) error {
 		LABEL      = "label: "
 	)
 	var (
-		postId int64
-	)
-	mdInfo := make(map[string]string)
-	var (
+		postId     int64
 		postCh     chan int64
 		categoryCh chan []int64
 		labelCh    chan []int64
 	)
+	mdInfo := make(map[string]string)
+	
 	for i, lens := 0, len(lines); i < lens && i < 5; i++ { // 只查找前五行
 		switch {
 		case strings.HasPrefix(lines[i], TITLE):
