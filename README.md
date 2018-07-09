@@ -22,7 +22,7 @@
 
 * 服务端
 ```shell
-go get -u "https://github.com/zachrey/my-blog-by-go"
+go get -u github.com/zachrey/my-blog-by-go
 
 cd $GOPATH/src/github.com/zachrey/my-blog-by-go/
 
