@@ -51,7 +51,7 @@ go run main.go --help
 
 ## 项目结构
 .
-├── cmd              // 命令行工具
+├── cmd    // 命令行工具
 ├── controllers      // 控制器
 ├── database         // 数据库连接，配置等
 ├── front_web        // react前端内容
